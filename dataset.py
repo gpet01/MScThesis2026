@@ -62,5 +62,24 @@ insert_in_batches(
 
 db.commit()
 
+# Products
+product_data = [
+    (
+        i,
+        f"Product{i}",
+        random.randint(1, len(categories)),
+        round(random.uniform(10, 2500), 2)
+    )
+    for i in range(1, NUM_PRODUCTS + 1)
+]
+
+insert_in_batches(
+    cursor,
+    "INSERT INTO products (id, name, category_id, price) VALUES (%s, %s, %s, %s)",
+    product_data
+)
+
+db.commit()
+
 cursor.close()
 db.close()
