@@ -81,5 +81,59 @@ insert_in_batches(
 
 db.commit()
 
+#Orders
+start_date = date(2025, 1, 1)
+
+order_data = [
+    (
+        i,
+        random.randint(1, NUM_USERS),
+        start_date + timedelta(days=random.randint(0, 450))
+    )
+    for i in range(1, NUM_ORDERS + 1)
+]
+
+insert_in_batches(
+    cursor,
+    "INSERT INTO orders (id, user_id, order_date) VALUES (%s, %s, %s)",
+    order_data
+)
+
+db.commit()
+
+#Order items
+
+order_item_data = []
+order_item_id = 1
+
+for order_id in range(1, NUM_ORDERS + 1):
+    num_items = random.randint(MIN_ITEMS_PER_ORDER, MAX_ITEMS_PER_ORDER)
+    chosen_products = random.sample(range(1, NUM_PRODUCTS + 1), num_items)
+
+    for product_id in chosen_products:
+        order_item_data.append((
+            order_item_id,
+            order_id,
+            product_id,
+            random.randint(1, 3)
+        ))
+        order_item_id += 1
+
+insert_in_batches(
+    cursor,
+    "INSERT INTO order_items (id, order_id, product_id, quantity) VALUES (%s, %s, %s, %s)",
+    order_item_data,
+    batch_size=500
+)
+
+db.commit()
+
+print("Dataset is ready!")
+print(f"Users: {len(user_data)}")
+print(f"Categories: {len(category_data)}")
+print(f"Products: {len(product_data)}")
+print(f"Orders: {len(order_data)}")
+print(f"Order items: {len(order_item_data)}")
+
 cursor.close()
 db.close()
