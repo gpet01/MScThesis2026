@@ -27,3 +27,27 @@ for user in cursor.fetchall():
         "age": user["age"],
         "email": user["email"]
     })
+
+#Products
+
+cursor.execute("""
+SELECT p.id, p.name, p.price, c.name AS category
+FROM products p
+JOIN categories c ON p.category_id = c.id
+"""
+)
+
+for product in cursor.fetchall():
+    r.hset(f"product:{product['id']}", mapping={
+        "name": product["name"],
+        "price": float(product["price"]),
+        "category": product["category"]
+    })
+
+    #Secondary index for category, set
+    r.sadd(f"category:{product['category']}:products", product['id'])
+
+    #Secondary index for price range queries, sorted set
+    r.zadd("products:by_price", {
+        str(product["id"]): float(product["price"])
+    })
