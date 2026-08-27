@@ -60,3 +60,23 @@ for order in cursor.fetchall():
     })
     # Λίστα με παραγγελία ανά χρήστη
     r.rpush(f"user:{order['user_id']}:orders", order["id"])
+
+#Order items
+cursor.execute("""
+SELECT oi.order_id, p.name as product_name, oi.quantity
+FROM order_items oi
+JOIN products p ON oi.product_id = p.id
+""")
+
+for item in cursor.fetchall():
+    #ManyToMany relation, παραγγελία με προιοντα
+    r.rpush(
+        f"order:{item['order_id']}:items",
+        f"{item['product_name']} (qty: {item['quantity']})"
+    )
+
+print("ETL is completed!")
+
+cursor.close()
+db.close()
+r.close()
