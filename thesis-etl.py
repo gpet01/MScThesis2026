@@ -29,7 +29,6 @@ for user in cursor.fetchall():
     })
 
 #Products
-
 cursor.execute("""
 SELECT p.id, p.name, p.price, c.name AS category
 FROM products p
@@ -51,3 +50,13 @@ for product in cursor.fetchall():
     r.zadd("products:by_price", {
         str(product["id"]): float(product["price"])
     })
+
+#Orders
+cursor.execute("SELECT * FROM orders")
+for order in cursor.fetchall():
+    r.hset(f"order:{order['id']}", mapping={
+        "user_id": order["user_id"],
+        "order_date": str(order["order_date"])
+    })
+    # Λίστα με παραγγελία ανά χρήστη
+    r.rpush(f"user:{order['user_id']}:orders", order["id"])
