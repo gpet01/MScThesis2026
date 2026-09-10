@@ -20,7 +20,7 @@ mysql_conn = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
-    database="thesis"
+    database="thesis2026"
 )
 cursor = mysql_conn.cursor(dictionary=True)
 
