@@ -3,8 +3,6 @@ import random
 import mysql.connector
 import redis
 
-from dataset import product_id
-
 # ---------------------------
 # Configuration
 # ---------------------------
